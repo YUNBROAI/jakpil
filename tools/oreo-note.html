@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>오레오 에세이 노트</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gothic+A1:wght@400;600;800&family=Nanum+Myeongjo:wght@400;700&display=swap">
+<style>
+  body { margin: 0; }
+  /* Layout: one writing column; the book's label-left table becomes a label/answer grid on wide screens and stacks on phones. */
+  :root {
+    --bg: #f3f6f4;
+    --surface: #ffffff;
+    --ink: #1c2521;
+    --muted: #5b6a63;
+    --line: #d3ded8;
+    --accent: #2c6a4d;
+    --accent-soft: #e3eee8;
+    --on-accent: #ffffff;
+    --warn: #a2412b;
+    --display: "Black Han Sans", "Gothic A1", "Apple SD Gothic Neo", sans-serif;
+    --ui: "Gothic A1", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    --pen: "Nanum Myeongjo", "AppleMyungjo", "Batang", serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #111614; --surface: #19201d; --ink: #e3eae6; --muted: #98a9a0; --line: #2d3934;
+      --accent: #7cc4a0; --accent-soft: #1e2c25; --on-accent: #0f1712; --warn: #f08f78; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #111614; --surface: #19201d; --ink: #e3eae6; --muted: #98a9a0; --line: #2d3934;
+    --accent: #7cc4a0; --accent-soft: #1e2c25; --on-accent: #0f1712; --warn: #f08f78; color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--ui); font-size: 15px; line-height: 1.6; }
+  .wrap { max-width: 860px; margin: 0 auto; padding-inline: 16px; padding-block: 20px 64px; display: flex; flex-direction: column; gap: 20px; }
+
+  /* top bar */
+  .top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; justify-content: space-between; }
+  .brand { font-family: var(--display); font-size: 22px; letter-spacing: -.01em; margin: 0; }
+  .brand span { color: var(--accent); }
+  .sync { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+  .sync i { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); display: inline-block; }
+  .sync[data-mode="cloud"] i { background: var(--accent); }
+
+  .essaybar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .essaybar select { flex: 1 1 220px; min-width: 0; }
+  select, input[type="text"] {
+    font: inherit; color: var(--ink); background: var(--surface); border: 1px solid var(--line);
+    border-radius: 8px; padding: 8px 10px;
+  }
+  button {
+    font: inherit; font-size: 14px; cursor: pointer; border-radius: 8px; padding: 8px 14px;
+    border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+  }
+  button:hover { border-color: var(--accent); }
+  button.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); font-weight: 600; }
+  button.ghost { background: transparent; border-color: transparent; color: var(--muted); }
+  button.ghost:hover { color: var(--ink); }
+  button.danger { color: var(--warn); border-color: var(--warn); }
+  button:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* steps */
+  .steps { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: thin; }
+  .steps button {
+    flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-start; gap: 0; text-align: left;
+    padding: 8px 12px; min-width: 116px; line-height: 1.35;
+  }
+  .steps b { font-size: 11px; letter-spacing: .06em; color: var(--muted); font-weight: 600; }
+  .steps span { font-size: 13px; font-weight: 600; white-space: nowrap; }
+  .steps em { font-style: normal; font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .steps button[aria-current="step"] { border-color: var(--accent); background: var(--accent-soft); }
+  .steps button[aria-current="step"] b { color: var(--accent); }
+  .steps button.done em { color: var(--accent); }
+
+  .banner { background: var(--accent-soft); border-radius: 10px; padding: 12px 14px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; font-size: 14px; }
+  .banner p { margin: 0; min-width: 0; flex: 1 1 260px; }
+
+  /* sheet */
+  .sheet { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 24px clamp(16px, 4vw, 32px); display: flex; flex-direction: column; gap: 22px; }
+  .sheet-head { display: flex; flex-direction: column; gap: 4px; }
+  .eyebrow { font-size: 12px; font-weight: 800; letter-spacing: .1em; color: var(--accent); }
+  .sheet-head h2 { font-family: var(--display); font-weight: 400; font-size: clamp(22px, 4vw, 30px); margin: 0; line-height: 1.25; text-wrap: balance; }
+  .sheet-head p { margin: 0; color: var(--muted); font-size: 14px; max-width: 60ch; }
+
+  .group { display: flex; flex-direction: column; gap: 14px; }
+  .group-title { font-weight: 800; font-size: 15px; border-top: 1px solid var(--line); padding-top: 16px; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+  .group-title small { font-weight: 400; color: var(--muted); font-size: 13px; }
+
+  .field { display: grid; gap: 6px 18px; }
+  @media (min-width: 720px) { .field { grid-template-columns: 10.5rem minmax(0, 1fr); } }
+  .label { display: flex; flex-direction: column; gap: 2px; }
+  .label strong { font-size: 14px; }
+  .label small { color: var(--muted); font-size: 12px; }
+  .answer { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .cue { font-size: 13px; color: var(--muted); margin: 0; }
+  .cue q { color: var(--ink); quotes: "“" "”"; }
+  textarea {
+    width: 100%; font-family: var(--pen); font-size: 16px; line-height: 1.85; color: var(--ink);
+    background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px;
+    resize: vertical; min-height: 3.6em; overflow: hidden;
+  }
+  textarea[readonly] { opacity: .85; }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; font-size: 12px; color: var(--muted); }
+  .count { font-variant-numeric: tabular-nums; }
+  .carry { border-left: 2px solid var(--accent); padding: 4px 10px; font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 4px; }
+  .carry p { margin: 0; font-family: var(--pen); color: var(--ink); white-space: pre-wrap; overflow-wrap: anywhere; }
+  .carry button { align-self: flex-start; font-size: 12px; padding: 3px 10px; }
+
+  .nav { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+
+  /* final */
+  .titlefield { display: flex; flex-direction: column; gap: 6px; }
+  .titlefield input { font-family: var(--pen); font-size: 18px; font-weight: 700; }
+  .stats { display: flex; flex-wrap: wrap; gap: 8px; }
+  .stat { border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: flex; flex-direction: column; min-width: 120px; flex: 1 1 120px; }
+  .stat b { font-size: 20px; font-variant-numeric: tabular-nums; }
+  .stat span { font-size: 12px; color: var(--muted); }
+  .essay { font-family: var(--pen); font-size: 17px; line-height: 2; max-width: 62ch; display: flex; flex-direction: column; gap: 1em; }
+  .essay h3 { font-size: 22px; margin: 0; line-height: 1.4; text-wrap: balance; }
+  .essay p { margin: 0; text-indent: 1em; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .essay .empty { color: var(--muted); text-indent: 0; font-family: var(--ui); font-size: 14px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  .toast { font-size: 13px; color: var(--accent); min-height: 1.4em; }
+
+  @media (prefers-reduced-motion: no-preference) { .sheet { animation: rise .18s ease-out; } }
+  @keyframes rise { from { transform: translateY(4px); } to { transform: none; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="top">
+    <h1 class="brand">오레오 <span>에세이 노트</span></h1>
+    <div class="sync" id="sync" data-mode="local"><i></i><span id="syncText">불러오는 중</span></div>
+  </div>
+
+  <div class="essaybar">
+    <label for="essaySelect" class="sync" style="flex-basis:100%">내 에세이</label>
+    <select id="essaySelect" aria-label="에세이 고르기"></select>
+    <button id="newBtn" class="primary">새 에세이</button>
+    <button id="delBtn" class="ghost">삭제</button>
+  </div>
+
+  <div id="banner" class="banner" hidden>
+    <p>예시 에세이를 보고 있어요. 칸이 어떻게 채워지는지 확인한 뒤 직접 써 보세요.</p>
+    <div class="actions">
+      <button id="copyExample">예시를 복사해서 고쳐 쓰기</button>
+      <button id="startNew" class="primary">새 에세이 시작</button>
+    </div>
+  </div>
+
+  <nav class="steps" id="steps" aria-label="워크시트 단계"></nav>
+
+  <main class="sheet" id="sheet"></main>
+
+  <div class="nav">
+    <button id="prevBtn">← 이전 단계</button>
+    <button id="nextBtn" class="primary">다음 단계 →</button>
+  </div>
+</div>
+
+<script>
+(() => {
+  // ---------- data model ----------
+  const OREO = [
+    { k: "o1", en: "Opinion", ko: "의견 주장하기", short: "의견" },
+    { k: "r",  en: "Reason",  ko: "이유 대기",     short: "이유" },
+    { k: "e",  en: "Example", ko: "사례 들기",     short: "사례" },
+    { k: "o2", en: "Opinion", ko: "의견 강조하기", short: "의견 강조" },
+  ];
+  const W4ROWS = [["core", "핵심 주제"], ["s1", "보충 설명 ①"], ["s2", "보충 설명 ②"], ["sum", "정리하기"]];
+
+  function blankEssay() {
+    const w4 = {};
+    OREO.forEach(o => { w4[o.k] = { core: "", s1: "", s2: "", sum: "" }; });
+    return {
+      title: "",
+      updatedAt: Date.now(),
+      w1: { target: "", idea: "", value: "", claim: "" },
+      w2: { o1: "", r: "", e: "", o2: "" },
+      w3: { topic: "", o1: "", r: "", e: "", o2: "", para: "" },
+      w4,
+      w5: { intro: "", o1: "", r: "", e: "", o2: "" },
+    };
+  }
+  function normalize(d) {
+    const b = blankEssay();
+    if (!d || typeof d !== "object") return b;
+    b.title = typeof d.title === "string" ? d.title : "";
+    b.updatedAt = typeof d.updatedAt === "number" ? d.updatedAt : Date.now();
+    for (const s of ["w1", "w2", "w3", "w5"]) for (const f in b[s]) if (typeof d[s]?.[f] === "string") b[s][f] = d[s][f];
+    for (const o of OREO) for (const [r] of W4ROWS) if (typeof d.w4?.[o.k]?.[r] === "string") b.w4[o.k][r] = d.w4[o.k][r];
+    return b;
+  }
+  const get = (obj, path) => path.split(".").reduce((a, k) => (a == null ? a : a[k]), obj);
+  const set = (obj, path, v) => { const ks = path.split("."); const last = ks.pop(); ks.reduce((a, k) => a[k], obj)[last] = v; };
+  const trim = s => (s || "").trim();
+
+  // split "~하려면 ~하라. 왜냐하면 ~하기 때문이다." into opinion / reason
+  function splitClaim(c) {
+    const t = trim(c); const i = t.indexOf("왜냐하면");
+    return i < 0 ? { o: t, r: "" } : { o: trim(t.slice(0, i)), r: trim(t.slice(i)) };
+  }
+  const joinW4 = (e, k) => W4ROWS.map(([r]) => trim(e.w4[k][r])).filter(Boolean).join(" ");
+
+  // ---------- example (built in, read only) ----------
+  const EXAMPLE = normalize({
+    title: "글을 잘 쓰고 싶다면 매일 세 문장만 써라",
+    w1: {
+      target: "글을 잘 쓰고 싶지만 막상 쓰려면 첫 문장에서 막히는 직장인. 시간이 없어서 글쓰기를 미루고 있다.",
+      idea: "글쓰기 실력은 한 번에 길게 쓰는 것보다 매일 짧게 쓰는 습관에서 자란다.",
+      value: "부담 없이 오늘부터 시작할 수 있는 글쓰기 방법을 얻는다.",
+      claim: "글을 잘 쓰려면 매일 세 문장만 써라. 왜냐하면 짧게라도 매일 써야 생각을 문장으로 바꾸는 힘이 붙기 때문이다.",
+    },
+    w2: {
+      o1: "글을 잘 쓰려면 매일 세 문장만 써라. 세 문장이면 5분이면 쓴다. 분량이 작아야 매일 쓸 수 있다.",
+      r: "왜냐하면 글쓰기는 생각을 문장으로 바꾸는 기술이고, 기술은 반복해야 늘기 때문이다.",
+      e: "예를 들면 퇴근길 지하철에서 그날 들은 말 한마디로 세 문장을 쓴 사람은 석 달 뒤 블로그 글 한 편을 한 시간 안에 썼다.",
+      o2: "그러므로 글을 잘 쓰려면 오늘 밤 세 문장부터 써라. 주제는 오늘 있었던 일 하나면 충분하다.",
+    },
+    w3: {
+      topic: "글쓰기 실력은 매일 짧게 쓰는 습관에서 자란다.",
+      o1: "글을 잘 쓰려면 매일 세 문장만 써라.",
+      r: "글쓰기는 반복해야 느는 기술이기 때문이다.",
+      e: "퇴근길에 세 문장씩 쓴 사람은 석 달 뒤 글 한 편을 한 시간 안에 썼다.",
+      o2: "그러므로 오늘 밤 세 문장부터 써라.",
+      para: "글을 잘 쓰려면 매일 세 문장만 써라. 글쓰기는 반복해야 느는 기술이기 때문이다. 퇴근길에 세 문장씩 쓴 사람은 석 달 뒤 글 한 편을 한 시간 안에 썼다. 그러므로 오늘 밤 세 문장부터 써라.",
+    },
+    w4: {
+      o1: { core: "글을 잘 쓰려면 매일 세 문장만 써라.", s1: "세 문장은 5분이면 쓸 수 있는 분량이다.", s2: "분량이 작아야 바쁜 날에도 거르지 않는다.", sum: "길게 쓰려 하지 말고 매일 쓰는 데 집중하자." },
+      r:  { core: "글쓰기는 반복해야 느는 기술이다.", s1: "머릿속 생각을 문장으로 옮기는 일은 손이 기억해야 빨라진다.", s2: "가끔 쓰는 긴 글보다 매일 쓰는 짧은 글이 반복 횟수가 훨씬 많다.", sum: "그래서 횟수를 늘리는 쪽이 실력을 빨리 키운다." },
+      e:  { core: "퇴근길 세 문장으로 실력이 바뀐 사례.", s1: "한 직장인은 지하철에서 그날 들은 말 한마디로 세 문장을 썼다.", s2: "석 달 뒤 그는 블로그 글 한 편을 한 시간 안에 썼다.", sum: "짧은 반복이 긴 글을 쓰는 힘이 되었다." },
+      o2: { core: "그러므로 글을 잘 쓰려면 오늘 밤 세 문장부터 써라.", s1: "주제는 오늘 있었던 일 하나면 충분하다.", s2: "잘 쓰려고 고치지 말고 세 문장을 끝까지 쓰는 것만 목표로 삼자.", sum: "매일의 세 문장이 쌓여 내 글이 된다." },
+    },
+    w5: {
+      intro: "글을 잘 쓰고 싶다는 사람은 많지만, 막상 빈 화면 앞에 앉으면 첫 문장부터 막힌다. 시간이 생기면 제대로 써 보겠다고 미루다 보면 한 달에 한 줄도 쓰지 못한다.",
+      o1: "글을 잘 쓰려면 매일 세 문장만 써라. 세 문장은 5분이면 쓸 수 있는 분량이다. 분량이 작아야 바쁜 날에도 거르지 않는다. 길게 쓰려 하지 말고 매일 쓰는 데 집중하자.",
+      r: "글쓰기는 반복해야 느는 기술이다. 머릿속 생각을 문장으로 옮기는 일은 손이 기억해야 빨라진다. 가끔 쓰는 긴 글보다 매일 쓰는 짧은 글이 반복 횟수가 훨씬 많다. 그래서 횟수를 늘리는 쪽이 실력을 빨리 키운다.",
+      e: "한 직장인은 퇴근길 지하철에서 그날 들은 말 한마디로 세 문장을 썼다. 처음에는 어색한 문장뿐이었지만, 석 달 뒤 그는 블로그 글 한 편을 한 시간 안에 썼다. 짧은 반복이 긴 글을 쓰는 힘이 되었다.",
+      o2: "그러므로 글을 잘 쓰려면 오늘 밤 세 문장부터 써라. 주제는 오늘 있었던 일 하나면 충분하다. 잘 쓰려고 고치지 말고 세 문장을 끝까지 쓰는 것만 목표로 삼자. 매일의 세 문장이 쌓여 내 글이 된다.",
+    },
+  });
+
+  // ---------- worksheet definitions ----------
+  const STEPS = [
+    {
+      n: 1, name: "아이디어 확인", title: "아이디어 확인하기",
+      desc: "누구에게 무슨 말을 할지 정하고, 한 문장 주장문으로 묶어요.",
+      fields: [
+        { p: "w1.target", label: "독자", sub: "Target", cue: "누가 이 글을 읽나요? 그 사람은 지금 무엇이 고민인가요?" },
+        { p: "w1.idea", label: "아이디어", sub: "Idea", cue: "독자에게 건넬 나의 생각은 무엇인가요?" },
+        { p: "w1.value", label: "가치 제안", sub: "Value Proposition", cue: "이 글을 읽으면 독자가 무엇을 얻나요?" },
+        { p: "w1.claim", label: "주장문 만들기", sub: "의견 + 제안", cue: "", quote: "~하려면 ~하라. 왜냐하면 ~하기 때문이다.", rows: 3 },
+      ],
+    },
+    {
+      n: 2, name: "쓸거리 4줄", title: "쓸거리 4줄을 4단락으로 만들기",
+      desc: "주장문을 오레오(OREO) 네 칸으로 나누고, 칸마다 질문에 답하며 쓸거리를 모아요.",
+      fields: [
+        { p: "w2.o1", label: "Opinion", sub: "의견 주장하기", quote: "~하려면 ○○ 하라.", cue: "○○ 한다는 건 무슨 말일까? ○○ 하면 정말 될까? 좋을까?",
+          from: e => splitClaim(e.w1.claim).o, fromLabel: "1단계 주장문의 의견" },
+        { p: "w2.r", label: "Reason", sub: "이유 대기", quote: "왜냐하면 ~하기 때문이다.", cue: "○○ 하면 된다고? 그렇게 말하는 근거가 뭐지?",
+          from: e => splitClaim(e.w1.claim).r, fromLabel: "1단계 주장문의 이유" },
+        { p: "w2.e", label: "Example", sub: "사례 들기", quote: "예를 들면", cue: "예를 들어 설명해 주면 좋겠는데. 쉽게 이해할 만한 사례가 있을까?" },
+        { p: "w2.o2", label: "Opinion", sub: "의견 강조하기", quote: "그러므로 ○○ 하려면 ★★ 하라.", cue: "★★ 한다는 것은 뭘까? ★★ 하는 이유는 뭘까? ★★ 하려면 무엇부터 해야 할까?" },
+      ],
+    },
+    {
+      n: 3, name: "1문단 에세이", title: "1문단 에세이 완성 연습",
+      desc: "쓸거리를 한두 줄로 다듬은 뒤, 이어 붙여 한 문단을 완성해요.",
+      groups: [
+        { title: "1단계", sub: "주제 만들기", fields: [
+          { p: "w3.topic", label: "주제", sub: "한 문장", from: e => e.w1.idea, fromLabel: "1단계 아이디어" } ] },
+        { title: "2단계", sub: "오레오 공식으로 쓸거리 만들기", fields: OREO.map(o => (
+          { p: "w3." + o.k, label: o.en, sub: o.short, rows: 2, from: e => e.w2[o.k], fromLabel: "2단계 " + o.en + "(" + o.short + ")" })) },
+        { title: "3단계", sub: "쓸거리를 연결해 1문단 에세이 완성하기", fields: [
+          { p: "w3.para", label: "1문단 에세이", sub: "네 줄을 잇고 다듬기", rows: 6,
+            from: e => OREO.map(o => trim(e.w3[o.k])).filter(Boolean).join(" "), fromLabel: "위의 네 줄 이어 붙이기" } ] },
+      ],
+    },
+    {
+      n: 4, name: "단락 설계", title: "오레오 공식을 에세이 단락으로 만들기",
+      desc: "오레오 네 칸을 각각 한 단락으로 키워요. 단락마다 핵심 주제, 보충 설명 두 개, 정리로 짜요.",
+      groups: OREO.map(o => ({ title: o.en, sub: o.ko, fields: W4ROWS.map(([r, lab]) => ({
+        p: "w4." + o.k + "." + r, label: lab, rows: 2,
+        ...(r === "core" ? { from: e => e.w3[o.k], fromLabel: "3단계 " + o.en + "(" + o.short + ")" } : {}),
+      })) })),
+    },
+    {
+      n: 5, name: "에세이 쓰기", title: "오레오 공식을 에세이로 만들기",
+      desc: "도입부를 쓰고, 4단계에서 짠 단락을 문장으로 풀어 에세이를 완성해요.",
+      fields: [
+        { p: "w5.intro", label: "도입부", sub: "독자를 글로 데려오기", rows: 4, cue: "1단계에서 정한 독자의 고민으로 시작해 보세요.",
+          ref: e => e.w1.target, refLabel: "1단계 독자" },
+        ...OREO.map(o => ({ p: "w5." + o.k, label: o.en, sub: o.ko, rows: 5,
+          from: e => joinW4(e, o.k), fromLabel: "4단계 " + o.en + " 단락 설계" })),
+      ],
+    },
+    { n: 6, name: "완성본", title: "완성본", final: true },
+  ];
+  const allFields = s => s.fields || (s.groups || []).flatMap(g => g.fields);
+
+  // ---------- storage ----------
+  const LS_KEY = "oreo-essay-notes.v1";
+  const LS_CUR = "oreo-essay-notes.current";
+  const lsGet = k => { try { return localStorage.getItem(k); } catch { return null; } };
+  const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch {} };
+
+  let essays = {};          // id -> essay
+  let currentId = null;     // null = example
+  let step = 1;
+  let mode = "local";       // "local" | "cloud"
+  let col = null;           // db collection for this viewer
+  const timers = {}, chains = {};
+
+  function loadLocal() {
+    try { const raw = JSON.parse(lsGet(LS_KEY) || "{}"); for (const id in raw) essays[id] = normalize(raw[id]); } catch {}
+  }
+  function saveLocal() { lsSet(LS_KEY, JSON.stringify(essays)); }
+
+  function persist(id) {
+    saveLocal();
+    if (mode !== "cloud") { setSync("저장됨 · 이 컴퓨터 브라우저에 저장"); return; }
+    setSync("저장 중…");
+    clearTimeout(timers[id]);
+    timers[id] = setTimeout(() => {
+      const data = essays[id];
+      const prev = chains[id] || Promise.resolve();
+      chains[id] = prev.then(() => (data ? col.doc(id).set(JSON.parse(JSON.stringify(data))) : col.doc(id).delete()))
+        .then(() => setSync("저장됨 · PC와 폰에서 이어 쓰기 가능"))
+        .catch(err => setSync(err?.code === "quota_exceeded" ? "저장 공간이 가득 찼어요. 안 쓰는 에세이를 지워 주세요." : "저장하지 못했어요. 이 기기에는 남아 있어요."));
+    }, data_delay(id));
+  }
+  const data_delay = id => (essays[id] ? 900 : 0);
+
+  function setSync(t) {
+    const el = document.getElementById("sync");
+    el.dataset.mode = mode;
+    document.getElementById("syncText").textContent = t;
+  }
+
+  // ---------- helpers ----------
+  const $ = id => document.getElementById(id);
+  const el = (tag, attrs = {}, kids = []) => {
+    const n = document.createElement(tag);
+    for (const k in attrs) {
+      if (k === "text") n.textContent = attrs[k];
+      else if (k === "class") n.className = attrs[k];
+      else if (k.startsWith("on")) n.addEventListener(k.slice(2), attrs[k]);
+      else n.setAttribute(k, attrs[k]);
+    }
+    (Array.isArray(kids) ? kids : [kids]).forEach(c => c && n.append(c));
+    return n;
+  };
+  const newestId = () => Object.keys(essays).sort((a, b) => essays[b].updatedAt - essays[a].updatedAt)[0] || null;
+  const cur = () => (currentId ? essays[currentId] : EXAMPLE);
+  const isExample = () => !currentId;
+  const chars = s => (s || "").length;
+  const charsNoSpace = s => (s || "").replace(/\s/g, "").length;
+  const essayTitle = e => trim(e.title) || trim(e.w3.topic) || trim(e.w1.idea) || "제목 없는 에세이";
+
+  function stepProgress(e, s) {
+    if (s.final) return null;
+    const fs = allFields(s); return [fs.filter(f => trim(get(e, f.p))).length, fs.length];
+  }
+  function fullText(e) {
+    return [e.w5.intro, ...OREO.map(o => e.w5[o.k])].map(trim).filter(Boolean);
+  }
+
+  function autosize(t) { t.style.height = "auto"; t.style.height = t.scrollHeight + 2 + "px"; }
+
+  function touch() {
+    const e = cur(); e.updatedAt = Date.now(); persist(currentId);
+    renderSteps(); renderSelect();
+  }
+
+  // ---------- render ----------
+  function renderSelect() {
+    const s = $("essaySelect"); s.textContent = "";
+    const ids = Object.keys(essays).sort((a, b) => essays[b].updatedAt - essays[a].updatedAt);
+    ids.forEach(id => s.append(el("option", { value: id, text: essayTitle(essays[id]) })));
+    s.append(el("option", { value: "__example", text: "예시: " + EXAMPLE.title }));
+    s.value = currentId || "__example";
+    $("delBtn").hidden = isExample();
+    $("banner").hidden = !isExample();
+  }
+
+  function renderSteps() {
+    const nav = $("steps"); nav.textContent = "";
+    const e = cur();
+    STEPS.forEach(s => {
+      const pr = stepProgress(e, s);
+      const b = el("button", { type: "button", onclick: () => go(s.n) }, [
+        el("b", { text: s.final ? "마무리" : "워크시트 " + s.n }),
+        el("span", { text: s.name }),
+        el("em", { text: pr ? pr[0] + " / " + pr[1] + "칸" : fullText(e).length ? "글 " + chars(fullText(e).join("")) + "자" : "아직 비어 있음" }),
+      ]);
+      if (pr && pr[0] === pr[1]) b.classList.add("done");
+      if (s.n === step) b.setAttribute("aria-current", "step");
+      nav.append(b);
+    });
+  }
+
+  function fieldNode(f) {
+    const e = cur();
+    const id = "f-" + f.p.replace(/\./g, "-");
+    const ta = el("textarea", { id, rows: f.rows || 3 });
+    ta.value = get(e, f.p) || "";
+    if (isExample()) ta.readOnly = true;
+    const count = el("span", { class: "count", text: chars(ta.value) + "자" });
+    ta.addEventListener("input", () => {
+      set(cur(), f.p, ta.value); count.textContent = chars(ta.value) + "자"; autosize(ta); touch();
+    });
+
+    const answer = el("div", { class: "answer" });
+    if (f.quote || f.cue) {
+      const cue = el("p", { class: "cue" });
+      if (f.quote) cue.append(el("q", { text: f.quote }));
+      if (f.quote && f.cue) cue.append(" ");
+      if (f.cue) cue.append(f.quote ? "'" + f.cue + "'" : f.cue);
+      answer.append(cue);
+    }
+    const carryText = f.from ? trim(f.from(e)) : f.ref ? trim(f.ref(e)) : "";
+    if (carryText) {
+      const box = el("div", { class: "carry" }, [
+        el("span", { text: (f.fromLabel || f.refLabel) }),
+        el("p", { text: carryText }),
+      ]);
+      if (f.from && !isExample()) {
+        box.append(el("button", { type: "button", text: ta.value.trim() ? "아래에 덧붙이기" : "그대로 가져오기", onclick: () => {
+          ta.value = ta.value.trim() ? ta.value.replace(/\s+$/, "") + "\n" + carryText : carryText;
+          ta.dispatchEvent(new Event("input")); ta.focus();
+          renderSheet();
+        } }));
+      }
+      answer.append(box);
+    }
+    answer.append(ta, el("div", { class: "meta" }, [el("span"), count]));
+
+    const node = el("div", { class: "field" }, [
+      el("label", { class: "label", for: id }, [el("strong", { text: f.label }), f.sub ? el("small", { text: f.sub }) : null]),
+      answer,
+    ]);
+    requestAnimationFrame(() => autosize(ta));
+    return node;
+  }
+
+  function renderSheet() {
+    const s = STEPS[step - 1];
+    const sheet = $("sheet"); sheet.textContent = "";
+    sheet.append(el("div", { class: "sheet-head" }, [
+      el("div", { class: "eyebrow", text: s.final ? "마무리" : "워크시트 " + s.n }),
+      el("h2", { text: s.title }),
+      s.desc ? el("p", { text: s.desc }) : null,
+    ]));
+    if (s.final) return renderFinal(sheet);
+    if (s.fields) sheet.append(el("div", { class: "group" }, s.fields.map(fieldNode)));
+    (s.groups || []).forEach(g => sheet.append(el("div", { class: "group" }, [
+      el("div", { class: "group-title" }, [g.title, el("small", { text: g.sub })]),
+      ...g.fields.map(fieldNode),
+    ])));
+    $("prevBtn").disabled = step === 1;
+    $("nextBtn").textContent = step === 5 ? "완성본 보기 →" : "다음 단계 →";
+    $("nextBtn").hidden = false;
+  }
+
+  function renderFinal(sheet) {
+    const e = cur();
+    const ti = el("input", { type: "text", id: "titleInput", placeholder: "제목을 정해 주세요" });
+    ti.value = e.title; if (isExample()) ti.readOnly = true;
+    sheet.append(el("div", { class: "titlefield" }, [el("label", { for: "titleInput", class: "label" }, [el("strong", { text: "제목" })]), ti]));
+
+    const paras = fullText(e);
+    const all = paras.join("\n\n");
+    const statBox = el("div", { class: "stats" });
+    const drawStats = () => {
+      statBox.textContent = "";
+      [[chars(all).toLocaleString(), "글자 수 (공백 포함)"],
+       [charsNoSpace(all).toLocaleString(), "글자 수 (공백 제외)"],
+       [(Math.ceil(chars(all) / 200 * 10) / 10).toLocaleString() + "매", "200자 원고지"],
+       [paras.length + "개", "문단"]].forEach(([v, l]) => statBox.append(el("div", { class: "stat" }, [el("b", { text: v }), el("span", { text: l })])));
+    };
+    drawStats();
+    sheet.append(statBox);
+
+    const essay = el("article", { class: "essay" }, [el("h3", { text: trim(e.title) || essayTitle(e) })]);
+    if (paras.length) paras.forEach(p => essay.append(el("p", { text: p })));
+    else essay.append(el("p", { class: "empty", text: "워크시트 5에서 도입부와 네 단락을 쓰면 여기에 에세이가 모여요." }));
+    sheet.append(essay);
+
+    ti.addEventListener("input", () => { e.title = ti.value; essay.querySelector("h3").textContent = trim(ti.value) || essayTitle(e); touch(); });
+
+    const toast = el("div", { class: "toast", role: "status" });
+    const plain = () => (trim(e.title) || essayTitle(e)) + "\n\n" + fullText(e).join("\n\n");
+    const actions = el("div", { class: "actions" }, [
+      el("button", { type: "button", class: "primary", text: "본문 복사", onclick: async () => {
+        try { await navigator.clipboard.writeText(plain()); toast.textContent = "복사했어요."; }
+        catch { const r = document.createRange(); r.selectNodeContents(essay); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); toast.textContent = "본문을 선택해 두었어요. 직접 복사해 주세요."; }
+      } }),
+      el("button", { type: "button", text: "텍스트 파일로 받기", onclick: () => save(asciiName("oreo-essay") + ".txt", plain(), toast) }),
+      el("button", { type: "button", text: "워크시트 전체 받기 (.md)", onclick: () => save(asciiName("oreo-worksheet") + ".md", toMarkdown(e), toast) }),
+      el("button", { type: "button", text: "인쇄용 빈 양식 열기 (PDF)", onclick: savePdf(toast) }),
+    ]);
+    sheet.append(actions, toast);
+    $("prevBtn").disabled = false;
+    $("nextBtn").hidden = true;
+  }
+
+  function toMarkdown(e) {
+    const L = [];
+    L.push("# " + (trim(e.title) || essayTitle(e)), "");
+    STEPS.filter(s => !s.final).forEach(s => {
+      L.push("## 워크시트 " + s.n + ". " + s.title, "");
+      const write = f => { L.push("**" + f.label + (f.sub ? " (" + f.sub + ")" : "") + "**", "", trim(get(e, f.p)) || "-", ""); };
+      if (s.fields) s.fields.forEach(write);
+      (s.groups || []).forEach(g => { L.push("### " + g.title + " · " + g.sub, ""); g.fields.forEach(write); });
+    });
+    L.push("## 완성본", "", ...fullText(e).flatMap(p => [p, ""]));
+    return L.join("\n");
+  }
+
+  // 한글 파일 이름은 브라우저에 따라 무시되므로 영문 + 날짜로 저장한다
+  const asciiName = base => { const d = new Date(), z = n => String(n).padStart(2, "0"); return base + "-" + d.getFullYear() + z(d.getMonth() + 1) + z(d.getDate()) + "-" + z(d.getHours()) + z(d.getMinutes()); };
+  // 로컬 버전: 브라우저가 파일을 바로 내려받는다
+  function save(filename, data, toast) {
+    const blob = data instanceof Blob ? data : new Blob([data], { type: "text/plain;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = filename;
+    document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    toast.textContent = "파일을 내려받았어요. drafts 폴더로 옮겨 두면 Claude가 함께 볼 수 있어요.";
+  }
+  // PDF는 같은 폴더 구조 안에 있으니 새 탭으로 연다
+  const savePdf = () => () => { window.open("../worksheets/oreo-worksheets.pdf", "_blank"); };
+
+  function render() { renderSelect(); renderSteps(); renderSheet(); }
+
+  function go(n) {
+    step = Math.max(1, Math.min(6, n));
+    lsSet(LS_CUR, JSON.stringify({ id: currentId, step }));
+    renderSteps(); renderSheet();
+    const active = $("steps").querySelector('[aria-current="step"]');
+    active?.scrollIntoView({ block: "nearest", inline: "nearest" });
+    window.scrollTo({ top: 0 });
+  }
+
+  function open(id) { currentId = id; lsSet(LS_CUR, JSON.stringify({ id, step })); render(); }
+
+  function create(from) {
+    const id = "e" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    const e = from ? normalize(JSON.parse(JSON.stringify(from))) : blankEssay();
+    e.updatedAt = Date.now();
+    essays[id] = e; persist(id); step = 1; open(id);
+  }
+
+  // ---------- events ----------
+  $("essaySelect").addEventListener("change", ev => open(ev.target.value === "__example" ? null : ev.target.value));
+  $("newBtn").addEventListener("click", () => create());
+  $("startNew").addEventListener("click", () => create());
+  $("copyExample").addEventListener("click", () => create(EXAMPLE));
+  $("prevBtn").addEventListener("click", () => go(step - 1));
+  $("nextBtn").addEventListener("click", () => go(step + 1));
+  let armed = null;
+  $("delBtn").addEventListener("click", () => {
+    const b = $("delBtn");
+    if (armed !== currentId) {
+      armed = currentId; b.textContent = "정말 삭제할까요?"; b.className = "danger";
+      setTimeout(() => { if (armed) { armed = null; b.textContent = "삭제"; b.className = "ghost"; } }, 4000);
+      return;
+    }
+    const id = currentId; armed = null; b.textContent = "삭제"; b.className = "ghost";
+    delete essays[id]; persist(id);
+    currentId = newestId(); render();
+  });
+
+  // ---------- boot ----------
+  loadLocal();
+  try { const c = JSON.parse(lsGet(LS_CUR) || "null"); if (c) { if (c.id && essays[c.id]) currentId = c.id; if (c.step) step = c.step; } } catch {}
+  if (!currentId) currentId = newestId();
+  setSync("이 컴퓨터 브라우저에 저장");
+  render();
+})();
+</script>
+
+</body>
+</html>
